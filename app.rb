@@ -2,64 +2,70 @@ require 'sinatra'
 require 'slim'
 require 'sqlite3'
 require 'sinatra/reloader'
-#require 'becrypt'
+require 'bcrypt'
 
+enable :sessions
 
 get('/') do
-    "
-
-    <h1>dingarderob.nu</h1>
-    <h1>Startsidan :)<h1/>
-    <a href='/loggain'>logga in</a>
-    <br>
-    <a href='/profil'>stilprofil</a>
-    <br>
-    <a href='/apple'></a>
-    <br>
-    <a href='/paron'>PÄRON</a>
-    <br>
-    <a href='/statisk'>tryck för att se min statiska fil!!!!!!!!!!! :)</a>
-    "
     
+    slim(:register)
 
 end 
 
 get('/statisk') do
-    send_file 'public/index.html'
-    
+    send_file 'public/index.html' 
 end
 
-get('/loggain') do
-    "
-    <h1>BANAN WHOOHOOO</h1>
-    <img src= 'https://www.extrakt.se/app/uploads/2015/09/5896136-bananer-1020x600.jpg' style='width:500px;'>
-    <br>
-    banansaker:
-    <ul>
-    <li>bananbröd</li>
-    <li>banankaka</li>
-    <li>skumbanan</li>
-    <li>banana split</li>
-    </ul>
-    <a href='/'>Tillbaka till startsidan!</a>
-    "
-
+get('/login') do
+   slim(:login)
 end
 
-get('/profil') do
-    "
-    <h1>APELFUCKINGSIN</h1>
-    <img src= 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQC7xxr3Ck9wlynIpzW1L82Vo3_s49AgLY4nAQJ6buFDvTXYFPHASA-6JKXIhTgnQaiL7g&usqp=CAU' style='width:500px;'>
-    <br>
-    apelsinsaker:
-    <ul>
-    <li>apelsinjos</li>
-    <li>apelsinmarmelad</li>
-    <li>aperol spritz</li>
-    </ul>
-    <a href='/'>Tillbaka till startsidan!</a>
-    "
+post('/login') do
+    username = params[:username]
+    password = params[:password] 
+    db = SQLite3::Database.new('db/db.db')
+    db.results_as_hash = true 
+    result = db.execute("SELECT * FROM users WHERE username = ?", [username]).first
+    pwdigest = result["pwdigest"]
+    id = result["id"]
+    session[:username] = username
+  
+  
+    if BCrypt::Password.new(pwdigest) == password 
+      session[:id] = id
+      redirect('/profile')
+    else
+      "FEL LÖSEN!"
+    end
+  
+end
 
+post('/users/new') do 
+    username = params[:username]
+    password = params[:password]
+    password_confirm = params[:password_confirm]
+    session[:username] = username
+
+    if (password == password_confirm)
+      password_digest = BCrypt::Password.create(password)
+      db = SQLite3::Database.new('db/db.db')
+      db.results_as_hash = true 
+      db.execute('INSERT INTO users (username,pwdigest) VALUES (?,?)',[username,password_digest])
+      result = db.execute("SELECT * FROM users WHERE username = ?", [username]).first
+      id = result["id"]
+      session[:id] = id
+      redirect('/profile')
+    else
+      "Lösenorden matchade inte"
+    end
+end
+
+
+get('/profile') do
+    db = SQLite3::Database.new('db/db.db')
+    db.results_as_hash = true 
+    users = db.execute("SELECT * FROM users")
+    slim(:profile,locals:{users:users})
 end
 
 get('/apple') do
