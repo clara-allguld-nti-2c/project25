@@ -68,44 +68,45 @@ get('/profile') do
     slim(:profile,locals:{users:users})
 end
 
-get('/apple') do
+get('/mywardrobe') do
     "
-    <h1>ÄÄÄÄÄPPPPPLEEEEEEEEEE</h1>
-    <img src= 'https://images.squarespace-cdn.com/content/v1/5bd6c248d74562c103550911/1600937822168-4WZTG741I86XO4KM19CF/image-asset.jpeg' style='width:500px;'>
-    <br>
-    äppelsaker:
+    <h1>dina kläder</h1>
+    tröjor:
     <ul>
-    <li>äppeljos</li>
-    <li>äppelpaj</li>
-    <li>äppelmos</li>
-    </ul>
+      <li>tröja1<li/>
+      <li>tröja2<li/>
+      <li>tröja3<li/>
+    <ul/>
+
+    byxor:
+    <ul>
+      <li>byxa1<li/>
+      <li>byxa2<li/>
+      <li>byxa3<li/>
+    <ul/>
+
+    skor:
+    <ul>
+      <li>skor1<li/>
+      <li>skor2<li/>
+      <li>skor3<li/>
+    <ul/>
+    
     <a href='/'>Tillbaka till startsidan!</a>
     "
 
 end
 
-get('/paron') do
+get('/myoutfits') do
     "
-    <h1>päron.</h1>
-    <img src= 'https://i0.wp.com/images-prod.healthline.com/hlcmsresource/images/AN_images/benefits-of-pears-1296x728-feature.jpg?w=1155&h=1528' style='width:500px;'>
-    <br>
-    päronsaker:
-    <ul>
-    <li>päronfestis</li>
-    <li>piggelin</li>
-    <li>päronmarmelad</li>
-    </ul>
+    <h1>dina outfits.</h1>
+  
+  
     <a href='/'>Tillbaka till startsidan!</a>
     "
 
 end
 
-get('/fruits/:horse/:taste') do
-    data = params[:horse]
-    data = params[:taste]
-
-    return "Du äter #{data} och den smakar #{taste}"
-end
 
 get('/music/:music_id') do
 	list = ["pop", "rock", "rnb", "rap"]
